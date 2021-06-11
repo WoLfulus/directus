@@ -95,7 +95,7 @@ function main() {
   echo "Tags = ${tags}"
 
   # build image
-  docker builder build \
+  docker buildx build \
     --tag directus:main \
     --build-arg VERSION=${version} \
     --build-arg REPOSITORY=${repository} \
