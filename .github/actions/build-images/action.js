@@ -61,7 +61,7 @@ function parseVersion(version) {
   const version = parseVersion(inputs.version);
   const target = [registry, repository].filter(part => !!part).join('/');
 
-  if (inputs.registry.length > 0) {
+  if (inputs.registry.length > 0 && inputs.push) {
     core.startGroup('Docker authentication');
     await exec.exec('docker', [
       'login', '-u', inputs.username, '-p', inputs.password, inputs.registry
