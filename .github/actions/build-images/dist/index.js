@@ -4436,14 +4436,14 @@ function parseVersion(version) {
 
   if (inputs.version === "latest") {
     const client = new http.HttpClient('Directus-Action');
-    const response = await client.getJson('https://api.github.com/repos/directus/directus/releases');
+    const response = await client.getJson(`https://api.github.com/repos/${inputs.repository}/releases`);
     inputs.version = response.result[0].tag_name;
   }
 
   const version = parseVersion(inputs.version);
   const target = [registry, repository].filter(part => !!part).join('/');
 
-  if (inputs.registry.length > 0) {
+  if (inputs.registry.length > 0 && inputs.push) {
     core.startGroup('Docker authentication');
     await exec.exec('docker', [
       'login', '-u', inputs.username, '-p', inputs.password, inputs.registry

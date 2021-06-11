@@ -54,7 +54,7 @@ function parseVersion(version) {
 
   if (inputs.version === "latest") {
     const client = new http.HttpClient('Directus-Action');
-    const response = await client.getJson('https://api.github.com/repos/directus/directus/releases');
+    const response = await client.getJson(`https://api.github.com/repos/${inputs.repository}/releases`);
     inputs.version = response.result[0].tag_name;
   }
 
