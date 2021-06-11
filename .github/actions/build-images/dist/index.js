@@ -4452,7 +4452,7 @@ function parseVersion(version) {
   }
 
   const imagesRoot = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
-  const images = await fs.promises.readdir();
+  const images = await fs.promises.readdir(imagesRoot);
   for (const image of images.filter(image => !image.startsWith('.'))) {
     const metadata = require(path.join(imagesRoot, image, 'image.json'));
 
