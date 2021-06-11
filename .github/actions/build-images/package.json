@@ -1,14 +1,20 @@
 {
   "name": "build-images",
   "version": "1.0.0",
-  "main": "action.js",
+  "main": "dist/index.js",
   "author": "João Biondo <wolfulus@gmail.com",
   "license": "MIT",
+  "scripts": {
+    "build": "ncc build action.js"
+  },
   "dependencies": {
     "@actions/core": "^1.4.0",
     "@actions/exec": "^1.1.0",
     "@actions/http-client": "^1.0.11",
     "@actions/tool-cache": "^1.7.1",
     "semver": "^6.3.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.28.6"
   }
 }

@@ -69,9 +69,10 @@ function parseVersion(version) {
     core.endGroup();
   }
 
-  const images = await fs.promises.readdir(path.join(__dirname, 'images'));
+  const imagesRoot = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
+  const images = await fs.promises.readdir();
   for (const image of images.filter(image => !image.startsWith('.'))) {
-    const metadata = require(path.join(__dirname, 'images', image, 'image.json'));
+    const metadata = require(path.join(imagesRoot, image, 'image.json'));
 
     core.startGroup(`Building "${image}" (version "${version.version}")`);
     await exec.exec('docker', ['buildx', 'build',
@@ -79,7 +80,7 @@ function parseVersion(version) {
       '--tag', `artifact:${image}`,
       '--build-arg', `VERSION=${version.version}`,
       '--build-arg', `REPOSITORY=${repository}`,
-      path.join(__dirname, 'images', image)
+      path.join(imagesRoot, image)
     ]);
     core.endGroup();
 
