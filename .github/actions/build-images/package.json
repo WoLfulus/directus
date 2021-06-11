@@ -1,0 +1,14 @@
+{
+  "name": "build-images",
+  "version": "1.0.0",
+  "main": "action.js",
+  "author": "João Biondo <wolfulus@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/http-client": "^1.0.11",
+    "@actions/tool-cache": "^1.7.1",
+    "semver": "^6.3.0"
+  }
+}
