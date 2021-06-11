@@ -96,9 +96,10 @@ function main() {
 
   # build image
   docker buildx build \
-    -t directus:main \
+    --tag directus:main \
     --build-arg VERSION=${version} \
     --build-arg REPOSITORY=${repository} \
+    --load \
     /directus/images/main
 
   # login into registry
