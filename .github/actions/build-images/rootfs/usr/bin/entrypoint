@@ -102,7 +102,9 @@ function main() {
     /directus/images/main
 
   # login into registry
-  docker login -u "${username}" -p "${password}" "${registry}"
+  if [ "${push}" == "true" ]; then
+    docker login -u "${username}" -p "${password}" "${registry}"
+  fi
 
   # Push latest
   # TODO: check if it's really the latest
