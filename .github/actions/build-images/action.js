@@ -79,6 +79,7 @@ function parseVersion(version) {
     await exec.exec('docker', ['buildx', 'build',
       '--load',
       '--tag', temp,
+      '--allow=network.host',
       '--platform', 'linux/arm64', //'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6',
       '--cache-to', `type=local,dest=.cache`,
       '--cache-from', `type=local,src=.cache`,
