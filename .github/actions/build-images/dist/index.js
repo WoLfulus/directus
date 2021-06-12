@@ -4462,11 +4462,15 @@ function parseVersion(version) {
   ]);
   core.endGroup();
 
-  await exec.exec('docker', ['image', 'ls']);
+  await exec.exec('docker', [
+    'image', 'ls',
+    '--format', '{{.Repository}}:{{.Tag}}',
+    '--filter', 'label=directus.version',
+  ]);
 
   const platforms = ['arm64'];
   for (const platform of platforms) {
-    core.startGroup(`Tagging "${image}" image (${platform})`);
+    core.startGroup(`Tagging "${target}" image (${platform})`);
 
     /*
     for (const tag of version.tags) {
