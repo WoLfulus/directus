@@ -4253,6 +4253,14 @@ module.exports = require("child_process");;
 
 /***/ }),
 
+/***/ 881:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("dns");;
+
+/***/ }),
+
 /***/ 614:
 /***/ ((module) => {
 
@@ -4381,6 +4389,7 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const fs = __nccwpck_require__(747);
+const dns = __nccwpck_require__(881);
 const path = __nccwpck_require__(622);
 const core = __nccwpck_require__(186);
 const exec = __nccwpck_require__(514);
@@ -4451,17 +4460,26 @@ function parseVersion(version) {
     core.endGroup();
   }
 
+  const localRegistry = (await dns.promises.resolve('registry'))[0];
+
   const imagesRoot = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
   const images = await fs.promises.readdir(imagesRoot);
   for (const image of images.filter(image => !image.startsWith('.'))) {
     const metadata = require(path.join(imagesRoot, image, 'image.json'));
+    const temp = `registry:5000/temp/artifact:${image}`;
 
     core.startGroup(`Building "${image}" (version "${version.version}")`);
     await exec.exec('docker', ['buildx', 'build',
       '--load',
-      '--tag', `artifact:${image}`,
+      '--tag', temp,
+      '--allow=network.host',
+      '--add-host', `registry:${localRegistry}`,
+      '--platform', 'linux/arm64', //'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6',
+      '--cache-to', `type=local,dest=.cache`,
+      '--cache-from', `type=local,src=.cache`,
       '--build-arg', `VERSION=${version.version}`,
       '--build-arg', `REPOSITORY=${repository}`,
+      '--push',
       path.join(imagesRoot, image)
     ]);
     core.endGroup();
@@ -4469,10 +4487,10 @@ function parseVersion(version) {
     core.startGroup(`Tagging "${image}" image`);
     for (const tag of version.tags) {
       const fqdn = `${target}:${tag}${metadata.suffix}`;
-      await exec.exec('docker', ['tag', `artifact:${image}`, fqdn]);
+      await exec.exec('docker', ['tag', temp, fqdn]);
     }
     if (inputs.latest) {
-      await exec.exec('docker', ['tag', `artifact:${image}`, `${target}:latest${metadata.suffix}`]);
+      await exec.exec('docker', ['tag', temp, `${target}:latest${metadata.suffix}`]);
     }
     core.endGroup();
 
@@ -4483,7 +4501,7 @@ function parseVersion(version) {
         await exec.exec('docker', ['push', fqdn]);
       }
       if (inputs.latest) {
-        await exec.exec('docker', ['tag', `artifact:${image}`, `${target}:latest${metadata.suffix}`]);
+        await exec.exec('docker', ['tag', temp, `${target}:latest${metadata.suffix}`]);
       }
       core.endGroup();
     }
