@@ -80,7 +80,6 @@ function parseVersion(version) {
 
     core.startGroup(`Building "${image}" (version "${version.version}")`);
     await exec.exec('docker', ['buildx', 'build',
-      '--load',
       '--tag', temp,
       '--allow=network.host',
       //'--add-host', `registry:${localRegistry}`,
