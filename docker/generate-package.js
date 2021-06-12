@@ -26,7 +26,3 @@ if (process.arch == 'arm64') {
 }
 
 fs.writeFileSync('./package.json', JSON.stringify(packageNew, null, 2));
-
-console.log({
-  packageNew,
-});

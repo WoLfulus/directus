@@ -1,3 +1,4 @@
 .dockerignore
+Earthfile
 Dockerfile
 image.json

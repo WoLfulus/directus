@@ -10,22 +10,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      registry:
-        image: registry
     steps:
+      - name: Cache digests
+        uses: actions/cache@v2
+        with:
+          path: .cache
+          key: ${{ runner.os }}
+
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Download latest earthly
+        run: "sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/download/v0.5.16/earthly-linux-amd64 -O /usr/local/bin/earthly && chmod +x /usr/local/bin/earthly'"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        id: buildx
-
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
 
       - name: Build GitHub Container Registry
         uses: ./.github/actions/build-images
