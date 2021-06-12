@@ -4452,30 +4452,23 @@ function parseVersion(version) {
     core.endGroup();
   }
 
-  //const localRegistry = (await dns.promises.resolve('registry'))[0];
+  const root = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
 
-  const imagesRoot = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
-  const images = await fs.promises.readdir(imagesRoot);
-  for (const image of images.filter(image => !image.startsWith('.'))) {
-    const metadata = require(path.join(imagesRoot, image, 'image.json'));
-    const temp = `registry:5000/temp/artifact:${image}`;
+  core.startGroup(`Building images`);
+  await exec.exec('earthly', [
+    '--build-arg', `VERSION=${version.version}`,
+    '--build-arg', `REPOSITORY=${repository}`,
+    `${root}+all`
+  ]);
+  core.endGroup();
 
-    core.startGroup(`Building "${image}" (version "${version.version}")`);
-    await exec.exec('docker', ['buildx', 'build',
-      '--tag', temp,
-      '--allow=network.host',
-      //'--add-host', `registry:${localRegistry}`,
-      '--platform', 'linux/arm64', //'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6',
-      '--cache-to', `type=local,dest=.cache`,
-      '--cache-from', `type=local,src=.cache`,
-      '--build-arg', `VERSION=${version.version}`,
-      '--build-arg', `REPOSITORY=${repository}`,
-      '--push',
-      path.join(imagesRoot, image)
-    ]);
-    core.endGroup();
+  await exec.exec('docker', ['image', 'ls']);
 
-    core.startGroup(`Tagging "${image}" image`);
+  const platforms = ['arm64'];
+  for (const platform of platforms) {
+    core.startGroup(`Tagging "${image}" image (${platform})`);
+
+    /*
     for (const tag of version.tags) {
       const fqdn = `${target}:${tag}${metadata.suffix}`;
       await exec.exec('docker', ['tag', temp, fqdn]);
@@ -4483,8 +4476,11 @@ function parseVersion(version) {
     if (inputs.latest) {
       await exec.exec('docker', ['tag', temp, `${target}:latest${metadata.suffix}`]);
     }
+    */
+
     core.endGroup();
 
+    /*
     if (inputs.registry.length > 0 && inputs.push) {
       core.startGroup(`Pushing "${image}" tags`);
       for (const tag of version.tags) {
@@ -4496,6 +4492,7 @@ function parseVersion(version) {
       }
       core.endGroup();
     }
+    */
   }
 
 })().catch(error => {
