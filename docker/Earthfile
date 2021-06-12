@@ -10,7 +10,6 @@ all:
     --platform=linux/ppc64le \
     --platform=linux/s390x \
     --platform=linux/arm/v7 \
-    --platform=linux/arm/v6 \
     +main
 
 dependencies:
@@ -19,7 +18,7 @@ dependencies:
   WORKDIR /directus
   RUN \
     apk upgrade --no-cache && \
-    apk add --no-cache bash jq python make g++
+    apk add --no-cache bash jq python make g++ vips
 
   RUN wget -O package.json "https://raw.githubusercontent.com/${REPOSITORY}/${VERSION}/api/package.json"
 
@@ -45,7 +44,7 @@ main:
     # - 'bash' for entrypoint script
     # - 'ssmtp' to be able to send mails
     # - 'util-linux' not sure if this is required
-    apk add --no-cache bash ssmtp util-linux && \
+    apk add --no-cache bash ssmtp util-linux vips && \
     # Install global node dependencies
     npm install -g yargs pino pino-colada && \
     # Create directory for Directus with corresponding ownership

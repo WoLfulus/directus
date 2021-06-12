@@ -19,11 +19,11 @@ let packageNew = {
 };
 
 // Oracle doesn't like ARM, we don't like building it.
-//if (process.arch == 'arm64') {
+if (process.arch !== "x64" && process.arch !== "amd64") {
   if (packageNew.dependencies.oracledb) {
-    delete packageNew.dependencies.oracledb
+    delete packageNew.dependencies.oracledb;
   }
-//}
+}
 
 fs.writeFileSync('./package.json', JSON.stringify(packageNew, null, 2));
 
