@@ -30,5 +30,5 @@ fs.writeFileSync('./package.json', JSON.stringify(packageNew, null, 2));
 console.log(JSON.stringify({
   arch: process.arch,
   config: process.config,
-  package: package,
+  package: packageNew,
 }, null, 2));
