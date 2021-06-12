@@ -1,5 +1,5 @@
 const fs = require('fs');
-const dns = require('dns');
+//const dns = require('dns');
 const path = require('path');
 const core = require('@actions/core');
 const exec = require('@actions/exec');
@@ -70,7 +70,7 @@ function parseVersion(version) {
     core.endGroup();
   }
 
-  const localRegistry = (await dns.promises.resolve('registry'))[0];
+  //const localRegistry = (await dns.promises.resolve('registry'))[0];
 
   const imagesRoot = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
   const images = await fs.promises.readdir(imagesRoot);
@@ -83,7 +83,7 @@ function parseVersion(version) {
       '--load',
       '--tag', temp,
       '--allow=network.host',
-      '--add-host', `registry:${localRegistry}`,
+      //'--add-host', `registry:${localRegistry}`,
       '--platform', 'linux/arm64', //'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6',
       '--cache-to', `type=local,dest=.cache`,
       '--cache-from', `type=local,src=.cache`,

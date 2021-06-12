@@ -4253,14 +4253,6 @@ module.exports = require("child_process");;
 
 /***/ }),
 
-/***/ 881:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("dns");;
-
-/***/ }),
-
 /***/ 614:
 /***/ ((module) => {
 
@@ -4389,7 +4381,7 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const fs = __nccwpck_require__(747);
-const dns = __nccwpck_require__(881);
+//const dns = require('dns');
 const path = __nccwpck_require__(622);
 const core = __nccwpck_require__(186);
 const exec = __nccwpck_require__(514);
@@ -4460,7 +4452,7 @@ function parseVersion(version) {
     core.endGroup();
   }
 
-  const localRegistry = (await dns.promises.resolve('registry'))[0];
+  //const localRegistry = (await dns.promises.resolve('registry'))[0];
 
   const imagesRoot = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'docker');
   const images = await fs.promises.readdir(imagesRoot);
@@ -4473,7 +4465,7 @@ function parseVersion(version) {
       '--load',
       '--tag', temp,
       '--allow=network.host',
-      '--add-host', `registry:${localRegistry}`,
+      //'--add-host', `registry:${localRegistry}`,
       '--platform', 'linux/arm64', //'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6',
       '--cache-to', `type=local,dest=.cache`,
       '--cache-from', `type=local,src=.cache`,
