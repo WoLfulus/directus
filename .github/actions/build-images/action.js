@@ -73,13 +73,18 @@ function parseVersion(version) {
   const images = await fs.promises.readdir(imagesRoot);
   for (const image of images.filter(image => !image.startsWith('.'))) {
     const metadata = require(path.join(imagesRoot, image, 'image.json'));
+    const temp = `registry:5000/temp/artifact:${image}`;
 
     core.startGroup(`Building "${image}" (version "${version.version}")`);
     await exec.exec('docker', ['buildx', 'build',
       '--load',
-      '--tag', `artifact:${image}`,
+      '--tag', temp,
+      '--platform', 'linux/arm64', //'linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm/v6',
+      '--cache-to', `type=local,dest=.cache`,
+      '--cache-from', `type=local,src=.cache`,
       '--build-arg', `VERSION=${version.version}`,
       '--build-arg', `REPOSITORY=${repository}`,
+      '--push',
       path.join(imagesRoot, image)
     ]);
     core.endGroup();
@@ -87,10 +92,10 @@ function parseVersion(version) {
     core.startGroup(`Tagging "${image}" image`);
     for (const tag of version.tags) {
       const fqdn = `${target}:${tag}${metadata.suffix}`;
-      await exec.exec('docker', ['tag', `artifact:${image}`, fqdn]);
+      await exec.exec('docker', ['tag', temp, fqdn]);
     }
     if (inputs.latest) {
-      await exec.exec('docker', ['tag', `artifact:${image}`, `${target}:latest${metadata.suffix}`]);
+      await exec.exec('docker', ['tag', temp, `${target}:latest${metadata.suffix}`]);
     }
     core.endGroup();
 
@@ -101,7 +106,7 @@ function parseVersion(version) {
         await exec.exec('docker', ['push', fqdn]);
       }
       if (inputs.latest) {
-        await exec.exec('docker', ['tag', `artifact:${image}`, `${target}:latest${metadata.suffix}`]);
+        await exec.exec('docker', ['tag', temp, `${target}:latest${metadata.suffix}`]);
       }
       core.endGroup();
     }
